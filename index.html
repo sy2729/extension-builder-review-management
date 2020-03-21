@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+  
+  <div class="left">
+    <div class="img-inner"></div>
+  </div>
+  <div class="right">
+    <form action="">
+      <h3>登录扩展设计器审核评论管理</h3>
+      <label for="">
+        <span>帐号</span>
+        <input type="text" class="account">
+      </label>
+      <label for="">
+        <span>密码</span>
+        <input type="password" class="password">
+      </label>
+      <button>登录</button>
+    </form>
+  </div>
+
+  <script src="./js/jquery.js"></script>
+  <script>
+    let submit = document.querySelector('form')
+      submit.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        let username = $('form .account').val();
+        let password = $('form .password').val();
+        
+        let data = {
+          username,
+          password
+        }
+        // console.log(data)
+        if(username && password) {
+          postData('https://hobart.avosapps.us/api/login', data)
+          .then((e) => {
+            alert('登录成功');
+            // window.location.href = '/dashboard.html';
+          })
+          .catch(e=>{
+            console.log(e)
+          });
+        }
+
+      })
+
+
+
+      //POST请求事件
+      async function postData(url = '', data = {}) {
+      // Default options are marked with *
+      const response = await fetch(url, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *client
+        body: JSON.stringify(data) // body data type must match "Content-Type" header
+      });
+      return await response.json(); // parses JSON response into native JavaScript objects
+    }
+
+
+    //判断是否登录
+    window.onload = ()=>{
+      console.log(11)
+      fetch('https://hobart.avosapps.us/api/isLogin')
+        // .then(e=>e.text())
+        // .then(e=>console.log(e))
+        // .then(e=>{
+        //   console.log(e)
+        // })
+    }
+
+
+  </script>
+</body>
+</html>

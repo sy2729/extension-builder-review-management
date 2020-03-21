@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./css/dashboard.css">
+</head>
+<body>
+  <div class="wrap">
+    <form>
+      扩展设计器评论管理器 <br><br>
+        <label for="zh" class="radio-label">
+          <input id="zh" type="radio" name="lang" value="zh" class="radio-button">
+          <span>中文</span>
+        </label>
+        <label for="en" class="radio-label">
+          <input id="en" type="radio" name="lang" value="en" class="radio-button">
+          <span>英文</span>
+        </label>
+        <br>
+        <label for="" class="textarea hint">
+          备注
+          <br>
+          <textarea class="hint-area" name="" id="" cols="30" rows="3"></textarea>
+        </label>
+        <br>
+  
+        <label for="" class="textarea">
+          正文
+          <br>
+          <textarea class="text-area" name="" id="" cols="30" rows="10"></textarea>
+        </label>
+        <br>
+        <button id="submit">提交</button>
+    </form>
+    <div class="reviews-wrap">
+      <div class="switch-wrap">
+        <p attr-lang='all'>All</p>
+        <p attr-lang='zh'>中</p>
+        <p attr-lang='en'>英</p>
+      </div>
+      <div class="reviews">
+          <div class="loader loader--style2" title="1">
+            <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                width="40px" height="40px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+            <path fill="#000" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
+              <animateTransform attributeType="xml"
+                attributeName="transform"
+                type="rotate"
+                from="0 25 25"
+                to="360 25 25"
+                dur="0.6s"
+                repeatCount="indefinite"/>
+              </path>
+            </svg>
+          </div>            
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/jquery.js"></script>
+  <script src="./js/moment.js"></script>
+  <script>
+      let reviewData;
+      let currentLanguage = 'all';
+      let submit = document.querySelector('form')
+      submit.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        let text = $('form .text-area').val();
+        let hint = $('form .hint-area').val();
+        let lang;
+        $("form [name='lang']").each((index, e)=>{
+          if(e.checked) {
+            lang = e.value;
+          }
+        });
+        let data = {
+          text,
+          hint,
+          lang,
+          "createdBy": "hobart"
+        }
+        
+        if(text && hint && lang) {
+          postData('https://hobart.avosapps.us/api/audit/content/append', data)
+          .then((e) => {
+            alert('上传成功');
+            $('form .hint-area, form .text-area').val('');
+            getData();
+          })
+          .catch(e=>{
+            console.log(e)
+          });
+        }
+
+        
+        // sendData(data, (result)=>{
+        //   console.log(result)
+        // })
+      })
+
+      
+      
+      
+      //页面首页加载
+      window.addEventListener('load', ()=>{
+        $(`.switch-wrap p[attr-lang='${currentLanguage}']`).addClass('active');
+        getData(()=>{
+          $('.delete').on('click',(e)=>{
+            let id = $(e.currentTarget).parent().attr('data-id')
+            // console.log(id)
+            deleteReview(id, ()=>{
+              $(e.currentTarget).parent().remove();
+            })
+          })
+        })
+      
+        $('.switch-wrap p').on('click', (e)=>{
+          let lang = $(e.currentTarget).attr('attr-lang');
+          currentLanguage = lang;
+          $(e.currentTarget).addClass('active').siblings().removeClass('active');
+          createReview(lang, reviewData)
+        })
+      })
+    
+      //POST请求事件
+      async function postData(url = '', data = {}) {
+      // Default options are marked with *
+      const response = await fetch(url, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *client
+        body: JSON.stringify(data) // body data type must match "Content-Type" header
+      });
+      return await response.json(); // parses JSON response into native JavaScript objects
+    }
+
+    //GET 请求事件
+    function getData(fn){
+      fetch('http://hobart.avosapps.us/api/audit/content/query')
+        .then(e=>e.json())
+        .then((e)=>{
+          console.log(e)
+          let {data} = e;
+          reviewData = data;
+          createReview(currentLanguage, data)
+          fn();
+        })
+    }
+    
+    function deleteReview(id,fn){
+      // let data = JSON.stringify({id});
+      // console.log(data)
+      postData('https://hobart.avosapps.us/api/audit/content/destroy ', {id})
+        .then(e=>{
+          if(e.code === 0){
+            fn();
+          }
+        })
+    }
+
+    function createReview(lang, data){
+      $('.reviews').empty();   
+      let allReviews = [];
+      if(lang !== 'all') {
+        data = data.filter(e=>{
+          if(e.lang === lang) {return e};
+        });
+      }
+      console.log(data)
+      data.forEach(j=>{
+        let showTime = moment(j.created_at).format('MMMM Do');
+        let time = moment(j.created_at).format('MMMM Do YYYY, h:mm:ss a');
+        allReviews.push($(`
+          <div class="each-review" data-id='${j.id}'>
+            <p class='text'>${j.text}</p>
+            <p class='hint'>注释：${j.hint}</p>
+            <p class='time' title='${time}'>${showTime}</p>
+            <p class='delete'><img src='./delete.png' /></p>
+          </div>
+        `))
+      })
+      console.log(allReviews)
+      $('.reviews').append(allReviews);
+    }
+
+
+
+
+      // function sendData(data, fn) {
+      //   var myHeaders = new Headers();
+      //   myHeaders.append("Content-Type", "multipart/form-data; boundary=--------------------------989024522335670109838366");
+
+      //   var requestOptions = {
+      //     method: 'POST',
+      //     headers: myHeaders,
+      //     body: data,
+      //     redirect: 'follow'
+      //   };
+      //   fetch("https://hobart.avosapps.us/api/audit/content/append", requestOptions)
+      //     .then(response => response.text())
+      //     .then(result => fn(result))
+      //     .catch(error => console.log('error', error));
+      // }
+
+    
+    
+    </script>
+</body>
+</html>

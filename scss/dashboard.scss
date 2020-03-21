@@ -1,0 +1,135 @@
+.radio-label {
+  cursor: pointer;
+}
+input {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+* {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';}
+
+/* textarea {
+  width: 
+} */
+
+button {
+  padding: 10px 50px;
+  border-radius: 4px;
+  background: orange;
+  margin: 10px auto;
+  text-align: center;
+  display: inherit;
+  cursor: pointer;
+}
+
+.wrap {
+  // display: flex;
+  // justify-content: space-around;
+  padding: 10px 20px;
+  
+  form {
+    position: fixed;
+    // flex: .3;
+    background: #60B3F9;
+    padding: 20px;
+    left: 10px;
+    top: 20px;
+    width: 30%;
+    height: 70vh;
+    
+    
+
+    label {
+      &.textarea {
+        display: block;
+        margin: 10px 0;
+
+        &.hint {
+
+        }
+      }
+      textarea {
+        font-size: 1.1em;
+        width: 100%;
+      }
+    }
+  }
+
+  .reviews-wrap {
+    width: 60%;
+    margin-left: 35%;
+
+    .switch-wrap {
+      display: flex;
+      p {
+        cursor: pointer;
+        padding: 10px 20px;
+        border: 1px solid;
+        &:hover {
+          background: #efefef;
+        }
+
+        &.active {background: #60B3F9;}
+
+        &:first-child {
+          border-right: 0px;
+        }
+        &:last-child {
+          border-left: 0px;
+        }
+      }
+    }
+
+
+    .each-review {
+      position: relative;
+      border: 1px solid #efefef;
+      padding: 10px 15px;
+      border-radius: 10px;
+      box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.2);
+      margin-bottom: 10px;
+
+      .time {
+        color: #b2b2b2;
+      }
+
+      .delete {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        right: 20px;
+        transform: translateY(-200%);
+        opacity: 0;
+        cursor: pointer;
+        img {
+          width: 100%;
+        }
+
+      }
+      &:hover {
+        .delete {
+          opacity: 1;
+        }
+      }
+    }
+
+    .loader{
+      margin: 0 0 2em;
+      height: 100px;
+      width: 20%;
+      text-align: center;
+      padding: 1em;
+      margin: 0 auto 1em;
+      display: inline-block;
+      vertical-align: top;
+    }
+    
+    /*
+      Set the color of the icon
+    */
+    svg path,
+    svg rect{
+      fill: #FF6700;
+    }
+  }
+}
