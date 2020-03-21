@@ -53,9 +53,7 @@ button {
           background: #efefef; }
         .wrap .reviews-wrap .switch-wrap p.active {
           background: #60B3F9; }
-        .wrap .reviews-wrap .switch-wrap p:first-child {
-          border-right: 0px; }
-        .wrap .reviews-wrap .switch-wrap p:last-child {
+        .wrap .reviews-wrap .switch-wrap p:not(:first-child) {
           border-left: 0px; }
     .wrap .reviews-wrap .each-review {
       position: relative;
@@ -66,6 +64,8 @@ button {
       margin-bottom: 10px; }
       .wrap .reviews-wrap .each-review .time {
         color: #b2b2b2; }
+      .wrap .reviews-wrap .each-review .hint.nopass {
+        color: red; }
       .wrap .reviews-wrap .each-review .delete {
         position: absolute;
         width: 20px;

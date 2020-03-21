@@ -20,6 +20,14 @@
           <span>英文</span>
         </label>
         <br>
+        <label for="pass" class="radio-label">
+            <input id="pass" type="radio" name="passState" value=1 class="radio-button">
+            <span>通过</span>
+          </label>
+          <label for="nopass" class="radio-label">
+            <input id="nopass" type="radio" name="passState" value=0 class="radio-button">
+            <span>不通过</span>
+          </label>
         <label for="" class="textarea hint">
           备注
           <br>
@@ -37,9 +45,11 @@
     </form>
     <div class="reviews-wrap">
       <div class="switch-wrap">
-        <p attr-lang='all'>All</p>
-        <p attr-lang='zh'>中</p>
-        <p attr-lang='en'>英</p>
+        <p attr-cate='all'>All</p>
+        <p attr-cate='zh'>中</p>
+        <p attr-cate='en'>英</p>
+        <p attr-cate='pass'>通过</p>
+        <p attr-cate='nopass'>不通过</p>
       </div>
       <div class="reviews">
           <div class="loader loader--style2" title="1">
@@ -64,25 +74,33 @@
   <script src="./js/moment.js"></script>
   <script>
       let reviewData;
-      let currentLanguage = 'all';
+      let currentCategory = 'all';
       let submit = document.querySelector('form')
       submit.addEventListener('submit',(e)=>{
         e.preventDefault();
         let text = $('form .text-area').val();
         let hint = $('form .hint-area').val();
-        let lang;
+        let lang; let resloveType;
         $("form [name='lang']").each((index, e)=>{
           if(e.checked) {
             lang = e.value;
           }
         });
+
+        $("form [name='passState']").each((index, e)=>{
+          if(e.checked) {
+            resloveType = e.value - 0;
+          }
+        });
+
         let data = {
           text,
           hint,
           lang,
+          resloveType,
           "createdBy": "hobart"
         }
-        
+        console.log(data)
         if(text && hint && lang) {
           postData('https://hobart.avosapps.us/api/audit/content/append', data)
           .then((e) => {
@@ -106,14 +124,14 @@
       
       //页面首页加载
       window.addEventListener('load', ()=>{
-        $(`.switch-wrap p[attr-lang='${currentLanguage}']`).addClass('active');
+        $(`.switch-wrap p[attr-cate='${currentCategory}']`).addClass('active');
         getData()
       
         $('.switch-wrap p').on('click', (e)=>{
-          let lang = $(e.currentTarget).attr('attr-lang');
-          currentLanguage = lang;
+          let category = $(e.currentTarget).attr('attr-cate');
+          currentCategory = category;
           $(e.currentTarget).addClass('active').siblings().removeClass('active');
-          createReview(lang, reviewData)
+          createReview(category, reviewData)
         })
       
       })
@@ -145,7 +163,7 @@
           console.log(e)
           let {data} = e;
           reviewData = data;
-          createReview(currentLanguage, data);
+          createReview(currentCategory, data);
           if(fn)fn();
         })
     }
@@ -171,28 +189,45 @@
           })
     }
 
-    function createReview(lang, data){
+    function createReview(cate, data){
       $('.reviews').empty();   
       let allReviews = [];
-      if(lang !== 'all') {
+      if(cate !== 'all') {
+        // console.log(cate)
+        if(cate === 'pass') {
+          cate = 1;
+        }else if (cate === 'nopass'){
+          cate = 0;
+        };
+
+        console.log(cate)
+        // console.log(cate)
         data = data.filter(e=>{
-          if(e.lang === lang) {return e};
+          if(cate === 0 || cate === 1) {
+            // console.log('通过不通过')
+            // console.log(e.resloveType)
+            if(e.resloveType === cate) { console.log('找到'); return e};
+          }else {
+            // console.log('语言')
+            if(e.lang === cate) {return e};
+          }
         });
       }
-      console.log(data)
+      // console.log(data)
       data.forEach(j=>{
         let showTime = moment(j.created_at).format('MMMM Do');
         let time = moment(j.created_at).format('MMMM Do YYYY, h:mm:ss a');
+        console.log(j.resloveType)
         allReviews.push($(`
           <div class="each-review" data-id='${j.id}'>
             <p class='text'>${j.text}</p>
-            <p class='hint'>注释：${j.hint}</p>
+            <p class='hint ${j.resloveType === 1 ? '' : 'nopass'}'>注释：${j.hint}</p>
             <p class='time' title='${time}'>${showTime}</p>
             <p class='delete'><img src='./delete.png' /></p>
           </div>
         `))
       })
-      console.log(allReviews)
+      // console.log(allReviews)
       $('.reviews').append(allReviews);
       deleteReviewListener();
     }

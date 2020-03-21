@@ -71,12 +71,12 @@ button {
 
         &.active {background: #60B3F9;}
 
-        &:first-child {
-          border-right: 0px;
-        }
-        &:last-child {
+        &:not(:first-child) {
           border-left: 0px;
         }
+        // &:last-child {
+        //   border-left: 0px;
+        // }
       }
     }
 
@@ -91,6 +91,12 @@ button {
 
       .time {
         color: #b2b2b2;
+      }
+
+      .hint {
+        &.nopass {
+          color: red;
+        }
       }
 
       .delete {
