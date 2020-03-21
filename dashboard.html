@@ -107,20 +107,7 @@
       //页面首页加载
       window.addEventListener('load', ()=>{
         $(`.switch-wrap p[attr-lang='${currentLanguage}']`).addClass('active');
-        getData(()=>{
-            // console.log($('.delete'))
-          $('.delete').on('click',(e)=>{
-            // console.log(111)
-            let id = $(e.currentTarget).parent().attr('data-id')
-
-            // console.log(id)
-
-            deleteReview(id, ()=>{
-              $(e.currentTarget).parent().remove();
-            })
-
-          })
-        })
+        getData()
       
         $('.switch-wrap p').on('click', (e)=>{
           let lang = $(e.currentTarget).attr('attr-lang');
@@ -158,12 +145,12 @@
           console.log(e)
           let {data} = e;
           reviewData = data;
-          createReview(currentLanguage, data)
+          createReview(currentLanguage, data);
           if(fn)fn();
         })
     }
     
-    function deleteReview(id,fn){
+    function deleteReviewPost(id,fn){
       // let data = JSON.stringify({id});
       // console.log(data)
       postData('https://hobart.avosapps.us/api/audit/content/destroy ', {id})
@@ -172,6 +159,16 @@
             fn();
           }
         })
+    }
+
+    function deleteReviewListener(){
+      $('.delete').on('click',(e)=>{
+            let id = $(e.currentTarget).parent().attr('data-id')
+            deleteReviewPost(id, ()=>{
+              $(e.currentTarget).parent().remove();
+              reviewData = reviewData.filter(e=>e.id !== id);
+            })
+          })
     }
 
     function createReview(lang, data){
@@ -197,6 +194,7 @@
       })
       console.log(allReviews)
       $('.reviews').append(allReviews);
+      deleteReviewListener();
     }
 
 
