@@ -108,12 +108,17 @@
       window.addEventListener('load', ()=>{
         $(`.switch-wrap p[attr-lang='${currentLanguage}']`).addClass('active');
         getData(()=>{
+            // console.log($('.delete'))
           $('.delete').on('click',(e)=>{
+            // console.log(111)
             let id = $(e.currentTarget).parent().attr('data-id')
+
             // console.log(id)
+
             deleteReview(id, ()=>{
               $(e.currentTarget).parent().remove();
             })
+
           })
         })
       
@@ -123,6 +128,7 @@
           $(e.currentTarget).addClass('active').siblings().removeClass('active');
           createReview(lang, reviewData)
         })
+      
       })
     
       //POST请求事件
@@ -153,7 +159,7 @@
           let {data} = e;
           reviewData = data;
           createReview(currentLanguage, data)
-          fn();
+          if(fn)fn();
         })
     }
     
