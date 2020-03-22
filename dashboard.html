@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>扩展设计器评论管理器</title>
   <link rel="stylesheet" href="./css/dashboard.css">
 </head>
 <body>
   <div class="wrap">
     <form>
-      扩展设计器评论管理器 <br><br>
+      <h2>扩展设计器评论管理器</h2>
+        <span class="cate-title">语言: </span>
         <label for="zh" class="radio-label">
           <input id="zh" type="radio" name="lang" value="zh" class="radio-button">
           <span>中文</span>
@@ -20,6 +21,7 @@
           <span>英文</span>
         </label>
         <br>
+        <span class="cate-title">类型: </span>
         <label for="pass" class="radio-label">
             <input id="pass" type="radio" name="passState" value=1 class="radio-button">
             <span>通过</span>
@@ -31,17 +33,33 @@
         <label for="" class="textarea hint">
           备注
           <br>
-          <textarea class="hint-area" name="" id="" cols="30" rows="3"></textarea>
+          <textarea class="hint-area" name="" id="" cols="30" rows="3" placeholder="请输入该评论在哪种情况下使用，如：'当扩展没有封面时'。"></textarea>
         </label>
         <br>
   
         <label for="" class="textarea">
           正文
           <br>
-          <textarea class="text-area" name="" id="" cols="30" rows="10"></textarea>
+          <textarea class="text-area" name="" id="" cols="30" rows="10" placeholder="请输入评论正文"></textarea>
         </label>
         <br>
-        <button id="submit">提交</button>
+        <button id="submit">
+          <p class="active">提交</p>
+          <div id="post-loading">
+              <svg version="1.1" class="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+              width="40px" height="40px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+            <path fill="#000" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
+              <animateTransform attributeType="xml"
+                attributeName="transform"
+                type="rotate"
+                from="0 25 25"
+                to="360 25 25"
+                dur="0.6s"
+                repeatCount="indefinite"/>
+              </path>
+          </svg>
+          </div>
+        </button>
     </form>
     <div class="reviews-wrap">
       <div class="switch-wrap">
@@ -53,7 +71,7 @@
       </div>
       <div class="reviews">
           <div class="loader loader--style2" title="1">
-            <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            <svg version="1.1" class="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                 width="40px" height="40px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
             <path fill="#000" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
               <animateTransform attributeType="xml"
@@ -67,6 +85,11 @@
             </svg>
           </div>            
       </div>
+    </div>
+
+    <div class="note">
+      <p title="为什么要做这个？"><a target="_blank" href="https://makeblock.yuque.com/hxzgga/wqoydp/fwtegy">About</a></p>
+      <p> Created with ❤️ by Shuai Yuan and Hongbin Cai</p>
     </div>
   </div>
 
@@ -102,11 +125,13 @@
         }
         console.log(data)
         if(text && hint && lang) {
+          switchClassAmongSib('#post-loading', 'active')
           postData('https://hobart.avosapps.us/api/audit/content/append', data)
           .then((e) => {
-            alert('上传成功');
+            // alert('上传成功');
             $('form .hint-area, form .text-area').val('');
             getData();
+            switchClassAmongSib('#post-loading', 'active', 0)
           })
           .catch(e=>{
             console.log(e)
@@ -133,7 +158,15 @@
           $(e.currentTarget).addClass('active').siblings().removeClass('active');
           createReview(category, reviewData)
         })
-      
+
+        //监听页面滚动
+        listenOnPageScroll(76, ()=>{
+          $('.switch-wrap').addClass('fixed');
+          $('.reviews').addClass('active');
+        },()=>{
+          $('.switch-wrap').removeClass('fixed');
+          $('.reviews').removeClass('active');
+        })
       })
     
       //POST请求事件
@@ -168,6 +201,7 @@
         })
     }
     
+    //删除 评论 函数
     function deleteReviewPost(id,fn){
       // let data = JSON.stringify({id});
       // console.log(data)
@@ -178,17 +212,17 @@
           }
         })
     }
-
+    //删除评论 的事件监听
     function deleteReviewListener(){
       $('.delete').on('click',(e)=>{
             let id = $(e.currentTarget).parent().attr('data-id')
             deleteReviewPost(id, ()=>{
-              $(e.currentTarget).parent().remove();
+              $(e.currentTarget).parent().fadeOut(400, ()=>{$(e.currentTarget).parent().remove();});
               reviewData = reviewData.filter(e=>e.id !== id);
             })
           })
     }
-
+    //创建评论
     function createReview(cate, data){
       $('.reviews').empty();   
       let allReviews = [];
@@ -220,8 +254,8 @@
         console.log(j.resloveType)
         allReviews.push($(`
           <div class="each-review" data-id='${j.id}'>
-            <p class='text'>${j.text}</p>
-            <p class='hint ${j.resloveType === 1 ? '' : 'nopass'}'>注释：${j.hint}</p>
+            <p class='text'>正文：${j.text}</p>
+            <p class='hint ${j.resloveType === 1 ? '' : 'nopass'}'>备注：${j.hint}</p>
             <p class='time' title='${time}'>${showTime}</p>
             <p class='delete'><img src='./delete.png' /></p>
           </div>
@@ -231,8 +265,29 @@
       $('.reviews').append(allReviews);
       deleteReviewListener();
     }
+    //监听种类切换栏
+    function listenOnPageScroll(height, fn1, fn2) {
+      let heightExcceed = false;
+      $(window).on('scroll', (e)=>{
+        if(window.pageYOffset > height) {
+          if(!heightExcceed && fn1) fn1();
+          heightExcceed = true;
+        }else{
+          if(heightExcceed && fn2) fn2();
+          heightExcceed = false;
+        };
+      })
+    }
 
-
+    //兄弟元素之间的样式切换
+    function switchClassAmongSib(eleClassName, classNameAdd, order) {
+      if(order === undefined) order = 1;
+      if(order) {
+        $(eleClassName).addClass(classNameAdd).siblings().removeClass(classNameAdd);
+      }else{
+        $(eleClassName).removeClass(classNameAdd).siblings().addClass(classNameAdd);
+      }
+    }
 
 
       // function sendData(data, fn) {

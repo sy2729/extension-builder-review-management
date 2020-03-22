@@ -23,14 +23,19 @@ button {
 
 .wrap {
   padding: 10px 20px; }
+  .wrap .cate-title {
+    margin-right: 4px;
+    color: #d1d0d0; }
   .wrap form {
     position: fixed;
-    background: #60B3F9;
+    background: #BA423F;
     padding: 20px;
     left: 10px;
     top: 20px;
     width: 30%;
-    height: 70vh; }
+    min-width: 200px;
+    height: 70vh;
+    border-radius: 10px; }
     .wrap form label.textarea {
       display: block;
       margin: 10px 0; }
@@ -40,21 +45,33 @@ button {
   .wrap .reviews-wrap {
     width: 60%;
     margin-left: 35%;
-    /*
-      Set the color of the icon
-    */ }
+    min-height: 90vh; }
     .wrap .reviews-wrap .switch-wrap {
-      display: flex; }
+      margin-top: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      z-index: 1; }
+      .wrap .reviews-wrap .switch-wrap.fixed {
+        position: fixed;
+        top: 5px;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        box-shadow: 0 10px 24px rgba(8, 15, 26, 0.16);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px); }
       .wrap .reviews-wrap .switch-wrap p {
+        margin: 0;
         cursor: pointer;
         padding: 10px 20px;
         border: 1px solid; }
         .wrap .reviews-wrap .switch-wrap p:hover {
           background: #efefef; }
         .wrap .reviews-wrap .switch-wrap p.active {
-          background: #60B3F9; }
+          background: #BA423F; }
         .wrap .reviews-wrap .switch-wrap p:not(:first-child) {
           border-left: 0px; }
+    .wrap .reviews-wrap .reviews.active {
+      padding-top: 76px; }
     .wrap .reviews-wrap .each-review {
       position: relative;
       border: 1px solid #efefef;
@@ -62,10 +79,15 @@ button {
       border-radius: 10px;
       box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.2);
       margin-bottom: 10px; }
+      .wrap .reviews-wrap .each-review .text {
+        color: #5c5c5c;
+        font-size: .9em; }
       .wrap .reviews-wrap .each-review .time {
         color: #b2b2b2; }
-      .wrap .reviews-wrap .each-review .hint.nopass {
-        color: red; }
+      .wrap .reviews-wrap .each-review .hint {
+        font-size: 1.1em; }
+        .wrap .reviews-wrap .each-review .hint.nopass {
+          color: red; }
       .wrap .reviews-wrap .each-review .delete {
         position: absolute;
         width: 20px;
@@ -78,17 +100,45 @@ button {
           width: 100%; }
       .wrap .reviews-wrap .each-review:hover .delete {
         opacity: 1; }
-    .wrap .reviews-wrap .loader {
-      margin: 0 0 2em;
-      height: 100px;
-      width: 20%;
-      text-align: center;
-      padding: 1em;
-      margin: 0 auto 1em;
-      display: inline-block;
-      vertical-align: top; }
-    .wrap .reviews-wrap svg path,
-    .wrap .reviews-wrap svg rect {
-      fill: #FF6700; }
+
+.loader {
+  margin: 0 0 2em;
+  height: 100px;
+  width: 20%;
+  text-align: center;
+  padding: 1em;
+  margin: 0 auto 1em;
+  display: inline-block;
+  vertical-align: top; }
+
+/*
+  Set the color of the icon
+*/
+svg path,
+svg rect {
+  fill: #FF6700; }
+
+#submit {
+  display: flex;
+  font-size: 1em;
+  align-items: center;
+  min-width: 200px;
+  justify-content: center; }
+  #submit p {
+    display: none;
+    margin: 0; }
+    #submit p.active {
+      display: block; }
+  #submit #post-loading {
+    display: none; }
+    #submit #post-loading.active {
+      display: block; }
+
+.note {
+  color: #5c5c5c; }
+  .note p {
+    margin: 0; }
+  .note a {
+    color: inherit; }
 
 /*# sourceMappingURL=dashboard.css.map */
